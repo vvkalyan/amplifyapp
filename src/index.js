@@ -11,6 +11,7 @@ ReactDOM.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>,
+  document.title="Student Admissions",
   document.getElementById('root')
 );
 
