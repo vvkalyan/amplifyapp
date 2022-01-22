@@ -1,0 +1,7 @@
+.datepicker{
+    z-index: 2000 !important;
+    transform: translate(0, 12px);
+}
+.datepicker .datepicker-days table td, .datepicker .datepicker-days table tr {
+    padding: 10px;
+}
