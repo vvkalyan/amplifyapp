@@ -1,66 +1,64 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import PersonalInfo from './Components/PersonalInfo';
+import AddressInfo from './Components/AddressInfo';
+import EducationInfo from './Components/EducationInfo';
+import PassportInfo from './Components/PassportInfo';
+import Confirm from './Components/Confirm';
+import Tabs from './Components/Tabs';
 import './App.css';
-import { API } from 'aws-amplify';
-import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
-import { listTodos } from './graphql/queries';
-import { createTodo as createTodoMutation, deleteTodo as deleteTodoMutation } from './graphql/mutations';
+import './Content/css/font-awesome.min.css';
+import './Content/fonts/FontAwesome/fontawesome-webfont.ttf';
+import './Content/fonts/FontAwesome/fontawesome-webfont.eot';
+import './Content/css/bootstrap-datepicker.min.css';
+import './Content/css/bootstrap.min.css';
 
-const initialFormState = { name: '', description: '' }
+import './Content/css/datepicker.css';
+import './Content/css/main.css';
 
-function App() {
-  const [Todos, setTodos] = useState([]);
-  const [formData, setFormData] = useState(initialFormState);
+const App = () => {
+	useEffect(() => {
+		var schoolData = [];
+		var i;
 
-  useEffect(() => {
-    fetchTodos();
-  }, []);
+		//prevents form submit and calls for next tab
 
-  async function fetchTodos() {
-    const apiData = await API.graphql({ query: listTodos });
-    setTodos(apiData.data.listTodos.items);
-  }
+		//change backgroun image in click
+		document.querySelectorAll('.nav .nav-link').forEach((item) => {
+			item.addEventListener('click', function (e) {
+				var tabID = e.target.getAttribute('aria-controls');
+				var bgImageName = tabID.split('pills-')[1];
+				var body = document.getElementsByTagName('body')[0];
+				body.style.cssText =
+					'background-image : url(../Content/img/bg_' + bgImageName + '.png);';
+			});
+		});
 
-  async function createTodo() {
-    if (!formData.name || !formData.description) return;
-    await API.graphql({ query: createTodoMutation, variables: { input: formData } });
-    setTodos([ ...Todos, formData ]);
-    setFormData(initialFormState);
-  }
+		const checkbox = document.getElementById('confirmsubmit');
 
-  async function deleteTodo({ id }) {
-    const newTodosArray = Todos.filter(Todo => Todo.id !== id);
-    setTodos(newTodosArray);
-    await API.graphql({ query: deleteTodoMutation, variables: { input: { id } }});
-  }
+		checkbox.addEventListener('change', function (event) {
+			if (event.currentTarget.checked) {
+				document
+					.getElementById('confirmSubmitButton')
+					.removeAttribute('disabled');
+			} else {
+				document.getElementById('confirmSubmitButton').disabled = true;
+			}
+		});
+	}, []);
 
-  return (
-    <div className="App">
-      <h1>My Todos App</h1>
-      <input
-        onChange={e => setFormData({ ...formData, 'name': e.target.value})}
-        placeholder="Todo name"
-        value={formData.name}
-      />
-      <input
-        onChange={e => setFormData({ ...formData, 'description': e.target.value})}
-        placeholder="Todo description"
-        value={formData.description}
-      />
-      <button onClick={createTodo}>Create Todo</button>
-      <div style={{marginBottom: 30}}>
-        {
-          Todos.map(Todo => (
-            <div key={Todo.id || Todo.name}>
-              <h2>{Todo.name}</h2>
-              <p>{Todo.description}</p>
-              <button onClick={() => deleteTodo(Todo)}>Delete Todo</button>
-            </div>
-          ))
-        }
-      </div>
-      <AmplifySignOut />
-    </div>
-  );
-}
+	return (
+		<div className='section-card'>
+			<div className='tab-content' id='pills-navigation-tabContent'>
+				<PersonalInfo />
 
-export default withAuthenticator(App);
+				<AddressInfo />
+				<EducationInfo />
+				<PassportInfo />
+				<Confirm />
+			</div>
+			<Tabs />
+		</div>
+	);
+};
+
+export default App;
